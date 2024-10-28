@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import Button from "./../components/ui/Button/Button";
 import {
   Tabs,
@@ -5,11 +7,26 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/Tabs";
+import { useAuthContext } from "../hooks/useAuthContext";
+import AddressModal from "../components/AddressModal";
 
 export default function Profile() {
+  const [userData, setUserData] = useState({ name: "", email: "" });
+  const [open, setOpen] = useState(false);
+  const { user } = useAuthContext();
+
+  useEffect(() => {
+    setUserData({ name: user.name, email: user.email });
+  }, [user]);
+
+  function userChange(e) {
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 md:px-8">
-      <div className="rounded-md bg-white p-4 shadow">
+      <div className="relative rounded-md bg-white p-4 shadow">
         <Tabs defaultValue="tab1">
           <TabsList className="">
             <TabsTrigger value="tab1">Profile</TabsTrigger>
@@ -32,21 +49,23 @@ export default function Profile() {
 
               <form className="flex flex-col gap-4 text-sm [&_input]:rounded-md [&_input]:border-2 [&_input]:border-slate-200 [&_input]:p-2 [&_label]:font-medium">
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="username">Name</label>
+                  <label htmlFor="name">Name</label>
                   <input
                     type="text"
-                    name="username"
-                    id="username"
-                    value="Burhanu Sultan Ramadan"
+                    name="name"
+                    id="name"
+                    value={userData.name}
+                    onChange={userChange}
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="username">Email</label>
+                  <label htmlFor="email">Email</label>
                   <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    value="burhanu@example.com"
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={userData.email}
+                    onChange={userChange}
                   />
                 </div>
 
@@ -75,11 +94,11 @@ export default function Profile() {
               <div className="mb-4">
                 <Button
                   size="custom"
-                  variant="outline"
-                  className="group px-2 py-1.5 text-sm"
+                  className="px-2 py-1.5 text-sm shadow"
+                  onClick={() => setOpen(true)}
                 >
                   <svg
-                    className="mr-1 size-3 group-hover:fill-white"
+                    className="mr-1 size-3 fill-white"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"
                   >
@@ -123,6 +142,8 @@ export default function Profile() {
                 </div>
               </div>
             </div>
+
+            <AddressModal open={open} onClose={() => setOpen(false)} />
           </TabsContent>
 
           <TabsContent value="tab3">

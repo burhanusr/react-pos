@@ -1,6 +1,29 @@
+import { useCartContext } from "../hooks/useCartContext";
+import { formatRupiah } from "../utils/formatCurrency";
+import { addCart, deleteCart } from "../api/cartApi";
 import Button from "./ui/Button/Button";
 
-export default function CartItem() {
+export default function CartItem({ productId, name, price, quantity }) {
+  const { setIsUpdate } = useCartContext();
+
+  const addItem = async () => {
+    try {
+      await addCart(productId, 1);
+      setIsUpdate(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteItem = async () => {
+    try {
+      await deleteCart(productId, 1);
+      setIsUpdate(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="flex items-stretch gap-4 text-sm [&_svg]:size-3 [&_svg]:shrink-0 [&_svg]:fill-gray-800">
       <div className="w-20">
@@ -12,14 +35,17 @@ export default function CartItem() {
       </div>
 
       <div className="flex w-full flex-col justify-between gap-2">
-        <h3 className="font-semibold">
-          Almond Blackberry Superberyy berry bery{" "}
-        </h3>
+        <h3 className="font-semibold">{name}</h3>
 
         <div className="flex items-center justify-between">
-          <p className="font-semibold">Rp. 15.000</p>
+          <p className="font-semibold">{formatRupiah(price)}</p>
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="custom" className="group p-0.5">
+            <Button
+              variant="outline"
+              size="custom"
+              className="group p-0.5"
+              onClick={deleteItem}
+            >
               <svg
                 className="group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"
@@ -28,12 +54,16 @@ export default function CartItem() {
                 <path d="M200-440v-80h560v80H200Z" />
               </svg>
             </Button>
-            <input
-              type="text"
-              className="w-4 border-none text-center font-bold outline-none"
-              value={10}
-            />
-            <Button variant="outline" size="custom" className="group p-0.5">
+            <div className="border-none text-center font-bold outline-none">
+              {quantity}
+            </div>
+            <Button
+              type="submit"
+              variant="outline"
+              size="custom"
+              className="group p-0.5"
+              onClick={addItem}
+            >
               <svg
                 className="group-hover:fill-white"
                 xmlns="http://www.w3.org/2000/svg"

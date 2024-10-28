@@ -1,10 +1,15 @@
 import { useState } from "react";
 
-export default function Sidebar() {
+export default function Sidebar({ categories, setCategory }) {
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   const toggleDropdown = (dropdownId) => {
     setActiveDropdown(activeDropdown === dropdownId ? null : dropdownId);
+  };
+
+  const selectedCategory = (category) => {
+    setCategory(category);
+    setActiveDropdown(null);
   };
 
   return (
@@ -35,29 +40,26 @@ export default function Sidebar() {
             >
               <ul>
                 <li>
-                  <a
-                    href="#"
-                    className="block w-full rounded-md py-2 pl-3 hover:bg-slate-100"
+                  <button
+                    className="w-full rounded-md py-2 pl-3 text-left hover:bg-slate-100"
+                    onClick={() => selectedCategory({})}
                   >
                     All
-                  </a>
+                  </button>
                 </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block w-full rounded-md py-2 pl-3 hover:bg-slate-100"
-                  >
-                    Food
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block w-full rounded-md py-2 pl-3 hover:bg-slate-100"
-                  >
-                    Drink
-                  </a>
-                </li>
+                {categories &&
+                  categories.map((cat) => (
+                    <li key={cat._id}>
+                      <button
+                        className="w-full rounded-md py-2 pl-3 text-left hover:bg-slate-100"
+                        onClick={() =>
+                          selectedCategory({ category: { query: cat.name } })
+                        }
+                      >
+                        {cat.name}
+                      </button>
+                    </li>
+                  ))}
               </ul>
             </div>
           </li>

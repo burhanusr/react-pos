@@ -1,7 +1,11 @@
+import { useCartContext } from "../hooks/useCartContext";
+import { formatRupiah } from "../utils/formatCurrency";
 import Cart from "../components/Cart";
 import Button from "./../components/ui/Button/Button";
 
 export default function Payment() {
+  const { cart } = useCartContext();
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 md:px-8">
       <main className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -52,21 +56,26 @@ export default function Payment() {
             <div className="mb-8 flex flex-col gap-2 rounded-md bg-slate-100 p-4">
               <div className="flex justify-between text-sm">
                 <p>Sub Total</p>
-                <p>Rp. 15.000</p>
+                <p>{cart && formatRupiah(cart.totalPrice)}</p>
               </div>
               <div className="flex justify-between text-sm">
                 <p>Delivery Fee</p>
-                <p>Rp. 15.000</p>
+                <p>Rp 15.000</p>
               </div>
               <div className="text-md mt-4 flex justify-between border-t border-slate-300 pt-4 font-semibold">
                 <p>Total</p>
-                <p>Rp. 15.000</p>
+                <p>{cart && formatRupiah(cart.totalPrice + 15000)}</p>
               </div>
             </div>
 
-            <Button size="sm" className="w-full">
-              Pay Now
-            </Button>
+            {cart &&
+              (cart.totalPrice > 0 ? (
+                <Button size="sm" className="w-full">
+                  Pay Now
+                </Button>
+              ) : (
+                ""
+              ))}
           </div>
         </div>
       </main>

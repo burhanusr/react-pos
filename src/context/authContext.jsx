@@ -1,27 +1,35 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useReducer } from "react";
 
-import { checkAuthStatus } from "../api/authApi";
+export const AuthContext = createContext();
 
-export const AuthContext = createContext({});
+export const authReducer = (state, action) => {
+  switch (action.type) {
+    case "LOGIN":
+      return { user: action.payload };
+    case "LOGOUT":
+      return { user: null };
+    default:
+      return state;
+  }
+};
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [state, dispatch] = useReducer(authReducer, {
+    user: JSON.parse(localStorage.getItem("user")),
+  });
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await checkAuthStatus();
-        setIsAuthenticated(true);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
+    const user = JSON.parse(localStorage.getItem("user"));
 
-    checkAuth();
+    if (user) {
+      dispatch({ type: "LOGIN", payload: user });
+    }
   }, []);
 
+  console.log("AuthContext state: ", state);
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider value={{ ...state, dispatch }}>
       {children}
     </AuthContext.Provider>
   );

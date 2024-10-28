@@ -1,6 +1,11 @@
 import CartItem from "./CartItem";
 
+import { useContext } from "react";
+import { CartContext } from "../context/cartContext";
+
 export default function Cart() {
+  const { cart } = useContext(CartContext);
+
   return (
     <div>
       <header className="flex gap-1">
@@ -14,14 +19,17 @@ export default function Cart() {
         <h2 className="text-md font-bold">Current Order</h2>
       </header>
 
-      <div className="cart-container mt-4 flex max-h-80 flex-col gap-4 overflow-y-auto px-4">
-        <CartItem />
-        <CartItem />
-        <CartItem />
-        <CartItem />
-        <CartItem />
-        <CartItem />
-        <CartItem />
+      <div className="cart-container mt-4 flex max-h-80 flex-col gap-4 overflow-y-auto px-4 py-2">
+        {cart &&
+          cart.items.map((item, index) => (
+            <CartItem
+              key={cart._id + index}
+              productId={item.product._id}
+              name={item.product.name}
+              price={item.product.price}
+              quantity={item.quantity}
+            />
+          ))}
       </div>
     </div>
   );

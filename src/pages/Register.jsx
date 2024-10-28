@@ -1,38 +1,46 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
 
-import Button from "./../components/ui/Button/Button";
 import { register } from "../api/authApi";
+import Button from "./../components/ui/Button/Button";
 
 export default function Register() {
-  const [formData, setFormData] = useState({
+  const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
     passwordConfirm: "",
   });
-
+  const [isLoading, setIsLoading] = useState(null);
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const { name, email, password, passwordConfirm } = formData;
+
+    const { name, email, password, passwordConfirm } = data;
+    setIsLoading(true);
 
     try {
+      // make api call
       await register(name, email, password, passwordConfirm);
-      setFormData({});
-      toast.success("Register Successful, Please Login Again!");
+      // empty form
+      setData({ name: "", email: "", password: "", passwordConfirm: "" });
+      // send success message
+      toast.success("Successfully Registered, Please Login Again!");
+      // navigate to login page
       navigate("/login");
+      setIsLoading(false);
     } catch (err) {
-      toast.error(err.response.data.message);
+      setIsLoading(false);
+      const message = err.response.data.message.split(",");
+      message.map((msg) => toast.error(msg));
     }
   }
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setData({ ...data, [name]: value });
   }
 
   return (
@@ -60,7 +68,7 @@ export default function Register() {
               id="username"
               autoComplete="off"
               onChange={handleChange}
-              value={formData.name}
+              value={data.name}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -74,7 +82,7 @@ export default function Register() {
               id="email"
               autoComplete="off"
               onChange={handleChange}
-              value={formData.email}
+              value={data.email}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -87,7 +95,7 @@ export default function Register() {
               name="password"
               id="password"
               onChange={handleChange}
-              value={formData.password}
+              value={data.password}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -100,12 +108,17 @@ export default function Register() {
               name="passwordConfirm"
               id="passConfirm"
               onChange={handleChange}
-              value={formData.passwordConfirm}
+              value={data.passwordConfirm}
             />
           </div>
           <div className="mt-4 w-full">
-            <Button type="submit" size="sm" className="w-full">
-              Register
+            <Button
+              type="submit"
+              disabled={isLoading}
+              size="sm"
+              className="w-full"
+            >
+              {isLoading ? "Registered..." : "Register"}
             </Button>
           </div>
         </form>

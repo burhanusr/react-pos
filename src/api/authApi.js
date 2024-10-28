@@ -18,7 +18,7 @@ export const register = async (name, email, password, passwordConfirm) => {
   return response.data;
 };
 
-export const checkAuthStatus = async () => {
+export const getCurrentUser = async () => {
   const response = await axiosInstance.get("/api/v1/users/profile");
 
   return response.data;

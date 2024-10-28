@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import toast from "react-hot-toast";
 
 import MenuTabs from "./MenuTabs";
 import { buttonVariants } from "./ui/Button/buttonVariants";
-import { AuthContext } from "../context/authContext";
 import { logout } from "../api/authApi";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { user, dispatch } = useAuthContext();
+
   const navigate = useNavigate();
 
   async function handleLogout() {
     try {
+      // make api call to set cookies to loggedout
       await logout();
-      setIsAuthenticated(false);
-      toast.success("Logged out successfully");
-      navigate("/");
-    } catch {
-      toast.error("Logout failed");
+      // remove user key in local storage
+      localStorage.removeItem("user");
+      // dispatch logout action
+      dispatch({ type: "LOGOUT" });
+      navigate("/login");
+    } catch (err) {
+      toast.error(err.response.data.message);
     }
   }
 
@@ -33,7 +36,7 @@ export default function Header() {
           </Link>
 
           <div>
-            {isAuthenticated ? (
+            {user ? (
               <div
                 className="relative cursor-pointer py-2 text-sm"
                 onMouseEnter={() => setOpen(true)}
@@ -49,7 +52,7 @@ export default function Header() {
                     alt=""
                   />
 
-                  <div className="hidden lg:block">Burhanu Sultan Ramadan</div>
+                  <div className="hidden lg:block">{user?.name}</div>
                   <button className="size-6 text-slate-800 hover:text-slate-600 lg:hidden">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

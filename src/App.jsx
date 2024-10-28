@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import { AuthProvider } from "./context/authContext";
+import { CartProvider } from "./context/cartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layout/MainLayout";
 import Login from "./pages/Login";
@@ -41,10 +42,12 @@ const router = createBrowserRouter([
 function App() {
   return (
     <AuthProvider>
-      <div className="h-full min-h-screen bg-slate-200">
-        <RouterProvider router={router} />
-        <Toaster position="top-center" reverseOrder={false} />
-      </div>
+      <CartProvider>
+        <div className="h-full min-h-screen bg-slate-200">
+          <RouterProvider router={router} />
+          <Toaster position="top-center" reverseOrder={true} />
+        </div>
+      </CartProvider>
     </AuthProvider>
   );
 }
