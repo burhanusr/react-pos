@@ -8,23 +8,9 @@ import {
   getAllVillages,
 } from "../api/regionApi";
 import { ComboBox } from "./ui/Combobox";
-
-const rawData = [
-  { code: "11", name: "Aceh" },
-  { code: "51", name: "Bali" },
-  { code: "36", name: "Banten" },
-  { code: "17", name: "Bengkulu" },
-  { code: "34", name: "Daerah Istimewa Yogyakarta" },
-  { code: "31", name: "DKI Jakarta" },
-];
+import { addAddress } from "../api/deliveryAddressApi";
 
 export default function AddressModal({ open, onClose }) {
-  //   const [regionData, setRegionData] = useState({
-  //     provinsi: null,
-  //     kabupaten: null,
-  //     kecamatan: null,
-  //     kelurahan: null,
-  //   });
   const [provinces, setProvinces] = useState(null);
   const [regencies, setRegencies] = useState(null);
   const [districts, setDistricts] = useState(null);
@@ -34,6 +20,15 @@ export default function AddressModal({ open, onClose }) {
     kabupaten: null,
     kecamatan: null,
     kelurahan: null,
+  });
+
+  const [newAddress, setNewAddress] = useState({
+    name: "",
+    province: "",
+    regency: "",
+    district: "",
+    village: "",
+    detail: "",
   });
 
   useEffect(() => {
@@ -65,6 +60,20 @@ export default function AddressModal({ open, onClose }) {
     fetchData();
   }, [regionId]);
 
+  const addNewAddress = async () => {
+    try {
+      await addAddress();
+      setIsUpdate(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setNewAddress({ ...newAddress, [name]: value });
+  }
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center transition-colors ${open ? "visible bg-black/20" : "invisible"}`}
@@ -82,7 +91,10 @@ export default function AddressModal({ open, onClose }) {
             <input
               type="text"
               placeholder="Nama Lengkap"
+              name="name"
+              value={newAddress.name}
               className="w-full bg-transparent focus:outline-none"
+              onChange={handleChange}
               required
             />
           </div>
@@ -93,6 +105,7 @@ export default function AddressModal({ open, onClose }) {
               data={provinces}
               dependency={regionId}
               setDependency={setRegionId}
+              // onChange={handleChange}
             />
             <ComboBox
               name="Kabupaten"
